@@ -1,3 +1,4 @@
 vendor/
 index.src.html
 .github/
+build.py

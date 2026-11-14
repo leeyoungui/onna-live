@@ -1461,7 +1461,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var renderer = null, scene = null, camera = null, raycaster = null, canvasEl = null;
     var raf = 0, lastT = 0, clock = 0, hudAcc = 0, syncAcc = 0;
     var RW = 26, RD = 20, RH = 5.4;
-    var player = { x: 0, z: 7.0, yaw: 0, look: -0.3, pose: '', poseUntil: 0, moving: false };
+    var player = { x: 0, z: 6.2, yaw: 0, look: -0.3, pose: '', poseUntil: 0, moving: false };
     var keys = {}, joy = { x: 0, y: 0 };
     var view = 'third';
     var avatar = null, parts = null;
@@ -1879,8 +1879,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         c.fillText(txt, w / 2, h / 2 + 1);
       });
       var sp = new three.Sprite(new three.SpriteMaterial({ map: tex, transparent: true }));
-      sp.scale.set(1.6, 0.4, 1);
-      sp.position.y = 1.78;
+      sp.scale.set(1.15, 0.29, 1);
+      sp.position.y = 1.72;
       return sp;
     }
     function makeAvatar(colorHex, hat, name, num) {
@@ -1980,7 +1980,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         camera.lookAt(player.x - Math.sin(player.yaw) * 6, eye + Math.tan(player.look) * 6, player.z - Math.cos(player.yaw) * 6);
         if (avatar) avatar.visible = false;
       } else {
-        var dist = 3.7;
+        var dist = 4.0;
         var cx = player.x + Math.sin(player.yaw) * dist * Math.cos(player.look);
         var cz = player.z + Math.cos(player.yaw) * dist * Math.cos(player.look);
         var cy = 1.45 - Math.sin(player.look) * dist;
@@ -2485,12 +2485,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       layouts = buildLayout();
       frames = layouts.map(makeFrame);
       applyAvatar(false);
-      syncWorks();
       wireInput();
       resize();
       built = true;
+      syncWorks();
     }
-    function afterOpen() {
+    function afterOpen(firstTime) {
       el('hallTitle').textContent = hallTitleText();
       el('hallSub').textContent = hallSubText();
       el('hallViewBtn').textContent = view === 'third' ? '🧍 3인칭' : '👤 1인칭';
@@ -2500,8 +2500,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       startPeers();
       syncSelf(true);
       hudTick();
-      var first = store('onna_avatar_' + room);
-      if (!first) setTimeout(openDress, 320);
+      if (firstTime) setTimeout(openDress, 320);
       hint(isTouch() ? '왼쪽 조이스틱으로 걷고, 화면을 드래그해 둘러보세요 · 액자를 탭하면 크게 보기'
         : 'W A S D / 방향키로 걷기 · 마우스 드래그로 둘러보기 · 액자를 클릭하면 크게 보기');
     }
@@ -2511,6 +2510,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (broken) { toast('이 기기에서는 3D 전시관을 열 수 없어요 · 목록으로 봐 주세요'); return; }
       if (!profile) { toast('먼저 입장해 주세요'); return; }
       if (!three) { toast('3D 라이브러리를 불러오지 못했어요 · 목록으로 봐 주세요'); return; }
+      var firstTime = !store('onna_avatar_' + room);
       isOpen = true;
       el('hall').classList.add('on');
       el('hall').setAttribute('aria-hidden', 'false');
@@ -2528,10 +2528,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
             return;
           }
           el('hallLoad').classList.add('hidden');
-          afterOpen();
+          afterOpen(firstTime);
         }, 80);
       } else {
-        afterOpen();
+        afterOpen(firstTime);
       }
     }
     function close() {
@@ -2568,7 +2568,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       isOpen: function () { return isOpen; },
       syncWorks: function () { if (built) syncWorks(); },
       onMeta: onMeta,
-      setProfile: function (p) { if (built && p) { player.x = 0; player.z = 7.0; player.yaw = 0; applyAvatar(false); } }
+      setProfile: function (p) { if (built && p) { player.x = 0; player.z = 6.2; player.yaw = 0; applyAvatar(false); } }
     };
   })();
 

@@ -8,13 +8,17 @@ rules_version = '2';
 //
 // ※ 테스트 모드는 만든 날부터 30일 뒤 자동으로 막힙니다. 그때는 이 규칙을 게시해 주세요.
 // ※ 더 조이려면 아래 allow 를 방별로 나누고, 삭제(delete)를 막는 방법이 있습니다.
+//
+// v2 (2026-11-15): 3D 전시관 추가
+//   - rooms/{room}/galleryPeers/{peerId} : 같은 방 아바타 위치·이모지 동기화 (퇴장 시 삭제 허용)
+//   - rooms/{room}/works/{id}/comments/{cid} : 작품 칭찬 댓글
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
     match /rooms/{room} {
       allow read: if true;
-      allow create, update: if true;   // 채팅 잠금 · 퀴즈 게시(교사 모드)
+      allow create, update: if true;   // 채팅 잠금 · 퀴즈 게시 · 전시관 제목(galleryTitle/gallerySub)
       allow delete: if false;          // 방 문서는 지우지 않음
 
       match /messages/{doc} {
@@ -29,8 +33,16 @@ service cloud.firestore {
         allow create: if request.resource.data.image is string
                       && request.resource.data.image.size() <= 400000;
         allow update: if request.resource.data.diff(resource.data).affectedKeys()
-                        .hasOnly(['likedBy']);   // 좋아요만 변경 허용
+                        .hasOnly(['likedBy']);   // 좋아요(하트)만 변경 허용
         allow delete: if false;
+
+        // 작품 칭찬 댓글 (3D 전시관 · 작품 상세)
+        match /comments/{cid} {
+          allow read: if true;
+          allow create: if request.resource.data.text is string
+                        && request.resource.data.text.size() <= 80;
+          allow update, delete: if false;
+        }
       }
 
       match /reflections/{doc} {
@@ -38,6 +50,15 @@ service cloud.firestore {
         allow create: if request.resource.data.text is string
                       && request.resource.data.text.size() <= 80;
         allow update, delete: if false;
+      }
+
+      // 3D 전시관 동시 접속 아바타 (위치·방향·이모지)
+      // 2초 간격 + 실제로 움직였을 때만 쓰고, 나가면 문서를 지웁니다.
+      match /galleryPeers/{peer} {
+        allow read: if true;
+        allow create, update: if request.resource.data.name is string
+                              && request.resource.data.name.size() <= 12;
+        allow delete: if true;          // 퇴장/탭 닫기 정리
       }
     }
   }

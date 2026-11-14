@@ -1465,7 +1465,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var renderer = null, scene = null, camera = null, raycaster = null, canvasEl = null;
     var raf = 0, lastT = 0, clock = 0, hudAcc = 0, syncAcc = 0;
     var RW = 26, RD = 20, RH = 5.4;
-    var player = { x: 0, z: 8.0, yaw: 0, look: -0.3, pose: '', poseUntil: 0, moving: false };
+    var player = { x: 0, z: 5.5, yaw: 0, look: -0.3, pose: '', poseUntil: 0, moving: false };
     var keys = {}, joy = { x: 0, y: 0 };
     var view = 'third';
     var avatar = null, parts = null;
@@ -2599,7 +2599,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       isOpen: function () { return isOpen; },
       syncWorks: function () { if (built) syncWorks(); },
       onMeta: onMeta,
-      setProfile: function (p) { if (built && p) { player.x = 0; player.z = 8.0; player.yaw = 0; applyAvatar(false); } }
+      setProfile: function (p) { if (built && p) { player.x = 0; player.z = 5.5; player.yaw = 0; applyAvatar(false); } }
     };
   })();
 

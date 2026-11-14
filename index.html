@@ -1450,6 +1450,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   });
 
   /* ================= 3D 전시관 (Three.js) ================= */
+  window.__onnaErr = null;
+  window.addEventListener('error', function (e) {
+    window.__onnaErr = (e.message || 'script error') + ' @' + (e.filename || '').slice(-24) + ':' + (e.lineno || 0) + ':' + (e.colno || 0);
+  });
   var HALL_TITLES = { 'bongmyeong-1119': '봉명중 3학년 AI 캐릭터 전시회', 'gwandong-microbit': '관동중 마이크로비트 게임 전시회' };
   var HALL_SUBS = { 'bongmyeong-1119': '2026.11.19 · AI 캐릭터 시간표 · 잠금화면 굿즈' };
   function hallTitleText() { return String(meta.galleryTitle || HALL_TITLES[room] || '우리반 작품 전시회').slice(0, 40); }
@@ -2561,10 +2565,22 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       el('hallTitle').textContent = hallTitleText();
       el('hallSub').textContent = hallSubText();
     }
+    function debugInfo() {
+      var painted = 0;
+      for (var i = 0; i < frames.length; i++) if (frames[i].work) painted++;
+      return {
+        open: isOpen, built: built, broken: broken, three: !!three,
+        works: works.length, frames: frames.length, painted: painted,
+        tex: Object.keys(texCache).length,
+        px: Math.round(player.x * 10) / 10, pz: Math.round(player.z * 10) / 10,
+        err: window.__onnaErr || null
+      };
+    }
 
     return {
       open: open,
       close: close,
+      debug: debugInfo,
       isOpen: function () { return isOpen; },
       syncWorks: function () { if (built) syncWorks(); },
       onMeta: onMeta,
@@ -2573,6 +2589,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   })();
 
   /* ================= 시작 ================= */
+  try { window.ONNA_HALL = Hall; } catch (e) {}
+
   var ok = initFirebase();
   if (ok) listen();
 

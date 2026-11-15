@@ -67,6 +67,8 @@
 - **Firestore Database만 사용** (Storage 미사용 → 무료 Spark 요금제로 동작)
 - 작품 이미지는 브라우저 `<canvas>`에서 가로 최대 720px, JPEG 품질 0.72부터 자동 조정하여 약 100KB 이하 base64로 문서에 직접 저장
 - 방 분리: `rooms/{room}` 문서(채팅 잠금·퀴즈·캔바 링크·전시관 제목) + 하위 컬렉션 `messages`, `works`(+`comments` 하위), `reflections`, `galleryPeers`
+- **입력창 키 가드**: 3D 전시관의 이동 단축키(`W A S D`·방향키·`V`·`Esc`)는 `input`/`textarea`/`select`/`contenteditable`에 커서가 있을 때 동작하지 않는다(`isTypingTarget()`). 그래서 칭찬 댓글 입력창에서는 띄어쓰기·한글 조합이 그대로 들어가고, `Esc`는 입력칸 포커스만 풀며 모달은 닫지 않는다(모달·전시관을 닫으려면 `Esc`를 한 번 더)
+- **모바일 키보드**: `visualViewport`로 키보드 높이를 재 `--kb` 변수에 넣어 작품 상세 시트를 키보드 위로 올린다. 전시관 컨테이너는 `touch-action:manipulation`(캔버스·조이스틱만 `none`)이라 모달 안을 손가락으로 스크롤할 수 있다
 - GitHub Pages(`main` 브랜치 루트)로 배포
 
 ## Firestore 준비 상태
@@ -94,3 +96,6 @@
 | `onna-live-20-hall-peer-avatar-2026-11-15.png` | 같은 방 친구 아바타 동기화 |
 | `onna-live-21-hall-teacher-title-2026-11-15.png` | 교사 모드에서 바꾼 전시관 제목 반영 |
 | `onna-live-22-hall-empty-classroom-2026-11-15.png` | 수업 전 빈 전시관(기본 제목) |
+| `onna-live-23-hall-entered-2026-11-15.png` | 라이브 배포본에서 전시관 입장(수정 배포 후 재검증) |
+| `onna-live-24-comment-space-typed-2026-11-15.png` | 칭찬 댓글 입력창에 띄어쓰기 포함 문장이 그대로 입력된 모습 |
+| `onna-live-25-comment-registered-2026-11-15.png` | 등록 후 띄어쓰기가 살아 있는 댓글이 목록에 표시 |

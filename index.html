@@ -267,6 +267,9 @@ main{max-width:880px;margin:0 auto;padding:12px 12px calc(96px + env(safe-area-i
 .focuscard button{flex:0 0 auto;height:34px;padding:0 11px;border-radius:10px;background:var(--lilac);color:#fff;font-size:11.5px;font-weight:800}
 #photoBtn{height:46px;padding:0 18px;border-radius:14px;font-size:14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#2f7d63,#1f5c48);box-shadow:0 8px 22px rgba(20,80,60,.45);display:inline-flex;align-items:center;gap:7px;border:1.5px solid rgba(255,255,255,.7)}
 #photoBtn.hidden{display:none}
+.guidebtn{height:40px;padding:0 15px;border-radius:13px;font-size:12.5px;font-weight:800;color:#1f5c48;background:rgba(255,255,255,.93);box-shadow:0 6px 18px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:6px}
+.guidebtn.hidden{display:none}
+.guidebtn:active{transform:scale(.97)}
 .hall-hint{position:absolute;left:50%;top:calc(56px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2;background:rgba(16,20,35,.62);color:#fff;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:11px;max-width:86vw;text-align:center;line-height:1.4;transition:opacity .5s;backdrop-filter:blur(4px);pointer-events:none}
 .hall-hint.fade{opacity:0}
 .hall-load{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#101423;color:#fff;font-size:13px;font-weight:700;text-align:center}
@@ -627,6 +630,7 @@ main{max-width:880px;margin:0 auto;padding:12px 12px calc(96px + env(safe-area-i
         <div class="fc-tx"><b id="focusTitle"></b><span id="focusMeta"></span></div>
         <button id="focusOpen">크게 보기</button>
       </div>
+      <button id="guideBtn" class="guidebtn">📸 포토존 가기</button>
       <button id="photoBtn" class="hidden">📸 포토존 찰칵</button>
     </div>
     <div class="reacts">
@@ -1466,6 +1470,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var raf = 0, lastT = 0, clock = 0, hudAcc = 0, syncAcc = 0;
     var RW = 26, RD = 20, RH = 5.4;
     var player = { x: 0, z: 5.5, yaw: 0, look: -0.3, pose: '', poseUntil: 0, moving: false };
+    var guide = null;
     var keys = {}, joy = { x: 0, y: 0 };
     var view = 'third';
     var avatar = null, parts = null;
@@ -1964,20 +1969,36 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       }
       return false;
     }
+    function canGo(x, z) {
+      if (!hit(x, z)) return true;
+      return hit(player.x, player.z); // 이미 막힌 자리에 있으면 빠져나올 수는 있게
+    }
     function step(dt) {
+      if (guide) {
+        var gx = guide.x - player.x, gz = guide.z - player.z;
+        var gd = Math.sqrt(gx * gx + gz * gz);
+        if (gd < 0.35) { guide = null; }
+        else {
+          var gsp = Math.min(3.4, gd * 2 + 1.2) * dt;
+          var gnx = player.x + (gx / gd) * gsp, gnz = player.z + (gz / gd) * gsp;
+          if (canGo(gnx, player.z)) player.x = gnx;
+          if (canGo(player.x, gnz)) player.z = gnz;
+          player.moving = true;
+        }
+      }
       var fx0 = Math.sin(player.yaw), fz0 = Math.cos(player.yaw);
       var f = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0) + joy.y;
       var r = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + joy.x;
       var len = Math.sqrt(f * f + r * r);
-      player.moving = false;
       if (len > 0.06) {
+        guide = null;
         f /= len; r /= len;
         var dx = (-fx0) * f + (fz0) * r;
         var dz = (-fz0) * f + (-fx0) * r;
         var sp = (keys.ShiftLeft || keys.ShiftRight ? 5.4 : 3.5) * Math.min(1, len);
         var nx = player.x + dx * sp * dt, nz = player.z + dz * sp * dt;
-        if (!hit(nx, player.z)) player.x = nx;
-        if (!hit(player.x, nz)) player.z = nz;
+        if (canGo(nx, player.z)) player.x = nx;
+        if (canGo(player.x, nz)) player.z = nz;
         player.moving = true;
       }
       if (avatar) { avatar.position.x = player.x; avatar.position.z = player.z; avatar.rotation.y = player.yaw + Math.PI; }
@@ -2080,6 +2101,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       }
       var inz = player.x > zone.x1 && player.x < zone.x2 && player.z > zone.z1 && player.z < zone.z2;
       el('photoBtn').classList.toggle('hidden', !inz);
+      el('guideBtn').classList.toggle('hidden', inz);
+    }
+    function goPhoto() {
+      guide = { x: 0, z: -7.7 };
+      player.yaw = 0;
+      hint('포토존으로 걸어갑니다 · 도착하면 📸 찰칵 버튼이 나타나요');
     }
     function hint(msg) {
       var h = el('hallHint');
@@ -2407,6 +2434,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       });
       el('focusOpen').addEventListener('click', function () { if (curFocus && curFocus.work) openWork(curFocus.work.id); });
       el('photoBtn').addEventListener('click', snap);
+      el('guideBtn').addEventListener('click', goPhoto);
       el('hallListBtn').addEventListener('click', function () { close(); });
       el('hallViewBtn').addEventListener('click', toggleView);
       el('hallDressBtn').addEventListener('click', openDress);

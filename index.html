@@ -2067,7 +2067,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       });
       var sp = new three.Sprite(new three.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
       sp.scale.set(0.62, 0.62, 1);
-      sp.position.set(target.position.x, 1.9, target.position.z);
+      sp.position.set(target.position.x, 1.82, target.position.z);
       sp.userData.life = 0;
       scene.add(sp);
       fx.push(sp);
@@ -2076,9 +2076,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       for (var i = fx.length - 1; i >= 0; i--) {
         var s = fx[i];
         s.userData.life += dt;
-        s.position.y += dt * 0.9;
-        s.material.opacity = Math.max(0, 1 - s.userData.life / 2.4);
-        if (s.userData.life > 2.4) { scene.remove(s); fx.splice(i, 1); }
+        s.position.y += dt * 0.55;
+        s.material.opacity = Math.max(0, 1 - s.userData.life / 2.2);
+        if (s.userData.life > 2.2) { scene.remove(s); fx.splice(i, 1); }
       }
     }
 

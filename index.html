@@ -241,7 +241,7 @@ main{max-width:880px;margin:0 auto;padding:12px 12px calc(96px + env(safe-area-i
 .viewbar button small{display:block;font-size:10px;font-weight:700;opacity:.75}
 
 /* ---------- 3D 전시관 ---------- */
-#hall{position:fixed;inset:0;z-index:70;display:none;background:#101423;overflow:hidden;touch-action:none;overscroll-behavior:none}
+#hall{position:fixed;inset:0;z-index:70;display:none;background:#101423;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
 #hall.on{display:block}
 #hallCanvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none}
 .hall-top{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;align-items:center;gap:7px;padding:calc(9px + env(safe-area-inset-top)) 10px 16px;background:linear-gradient(180deg,rgba(8,10,20,.78),rgba(8,10,20,0));pointer-events:none}
@@ -298,9 +298,10 @@ main{max-width:880px;margin:0 auto;padding:12px 12px calc(96px + env(safe-area-i
 #photoImg{width:100%;border-radius:14px;display:block;background:#f4f1fb;margin-top:4px}
 
 /* ---------- modal ---------- */
-.modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(28,20,54,.55);backdrop-filter:blur(3px)}
+/* --kb: 모바일 키보드가 올라온 높이. 입력창이 키보드에 가리지 않게 시트를 밀어 올린다 */
+.modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;padding-bottom:var(--kb,0px);background:rgba(28,20,54,.55);backdrop-filter:blur(3px)}
 .sheet{
-  width:100%;max-width:520px;max-height:88vh;overflow:auto;background:#fff;
+  width:100%;max-width:520px;max-height:calc(88vh - var(--kb,0px));overflow:auto;overscroll-behavior:contain;background:#fff;
   border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));
   animation:up .2s ease;box-shadow:var(--sh2);
 }
@@ -2258,6 +2259,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     }
     function closeWork() {
       el('workModal').classList.add('hidden');
+      try { el('hwInput').blur(); } catch (e) {}
       if (unsubComments) { try { unsubComments(); } catch (e) {} unsubComments = null; }
       curWork = null;
     }
@@ -2395,6 +2397,21 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         if (f && f.work) openWork(f.work.id);
       }
     }
+    /* 입력창(글 쓰는 칸)인지 판별 — 여기서는 키를 절대 가로채지 않는다 */
+    function isTypingTarget(t) {
+      if (!t || !t.tagName) return false;
+      var tag = t.tagName.toUpperCase();
+      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t.isContentEditable === true;
+    }
+    function typingNow(e) {
+      return isTypingTarget(e && e.target) || isTypingTarget(document.activeElement);
+    }
+    function closeTopLayer() {
+      if (!el('workModal').classList.contains('hidden')) { closeWork(); return true; }
+      if (!el('photoModal').classList.contains('hidden')) { el('photoModal').classList.add('hidden'); return true; }
+      if (!el('dressSheet').classList.contains('hidden')) { el('dressSheet').classList.add('hidden'); return true; }
+      return false;
+    }
     function wireInput() {
       canvasEl.addEventListener('pointerdown', onDown);
       canvasEl.addEventListener('pointermove', onMove);
@@ -2433,12 +2450,29 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
       window.addEventListener('keydown', function (e) {
         if (!isOpen) return;
+        // 칭찬 댓글 입력창 등에 커서가 있을 때: 띄어쓰기·글자·한글 조합을 그대로 입력되게 하고,
+        // Esc만 입력칸 포커스를 풀어 준다(모달을 닫지 않음).
+        if (typingNow(e)) {
+          if (e.key === 'Escape' || e.code === 'Escape') {
+            e.preventDefault();
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+          }
+          return;
+        }
         keys[e.code] = true;
         if (e.code === 'KeyV') toggleView();
-        if (e.code === 'Escape') close();
+        if (e.code === 'Escape') {
+          if (closeTopLayer()) return;
+          close(); return;
+        }
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].indexOf(e.code) >= 0) e.preventDefault();
       });
       window.addEventListener('keyup', function (e) { keys[e.code] = false; });
+      // 입력창에 포커스가 들어가면 걸어가던 상태를 멈춘다(입력 중 캐릭터가 계속 걷지 않게)
+      document.addEventListener('focusin', function (e) {
+        if (!isOpen) return;
+        if (isTypingTarget(e.target)) { keys = {}; joy.x = 0; joy.y = 0; }
+      });
       window.addEventListener('resize', resize);
       window.addEventListener('pagehide', function () { if (isOpen) stopPeers(); });
 
@@ -2454,7 +2488,26 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       el('dressDone').addEventListener('click', function () { el('dressSheet').classList.add('hidden'); syncSelf(true); });
       el('hwClose').addEventListener('click', closeWork);
       el('hwSend').addEventListener('click', sendComment);
-      el('hwInput').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sendComment(); } });
+      el('hwInput').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendComment(); } });
+      // 모바일: 키보드가 올라오면 입력줄이 가리지 않게 시트를 밀어 올린다
+      try {
+        var vv = window.visualViewport;
+        if (vv) {
+          var applyKb = function () {
+            var kb = Math.round(window.innerHeight - vv.height - vv.offsetTop);
+            if (!(kb > 60)) kb = 0;
+            document.documentElement.style.setProperty('--kb', kb + 'px');
+          };
+          vv.addEventListener('resize', applyKb);
+          vv.addEventListener('scroll', applyKb);
+          applyKb();
+        }
+        el('hwInput').addEventListener('focus', function () {
+          setTimeout(function () {
+            try { el('hwInput').scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { try { el('hwInput').scrollIntoView(); } catch (e2) {} }
+          }, 280);
+        });
+      } catch (e) {}
       el('hwLike').addEventListener('click', function () { if (curWork) toggleLike(curWork); });
       el('workModal').addEventListener('click', function (e) { if (e.target === el('workModal')) closeWork(); });
       el('photoSave').addEventListener('click', savePhoto);
@@ -2589,6 +2642,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       isOpen = false;
       stopLoop();
       stopPeers();
+      try {
+        if (isTypingTarget(document.activeElement) && document.activeElement.blur) document.activeElement.blur();
+        document.documentElement.style.setProperty('--kb', '0px');
+      } catch (e) {}
       el('hall').classList.remove('on');
       el('hall').setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';

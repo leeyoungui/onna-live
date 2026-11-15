@@ -2200,7 +2200,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         p.a.group.position.x += (p.tx - p.a.group.position.x) * k;
         p.a.group.position.z += (p.tz - p.a.group.position.z) * k;
         p.a.group.rotation.y = p.try2 + Math.PI;
-        if (Date.now() - (peerSeen[id] || 0) > 45000) p.a.group.visible = false;
+        // 상대가 남긴 clientTs 기준 — 캐시에 남은 문서나 탭을 닫은 친구는 45초 뒤 사라짐
+        var ct = (p.d && p.d.clientTs) ? p.d.clientTs : (peerSeen[id] || 0);
+        p.a.group.visible = (Date.now() - ct) <= 45000;
       });
     }
 

@@ -73,3 +73,24 @@
 
 프로젝트 `onna-live`에 **Firestore 데이터베이스가 만들어져 있어야** 실시간 기능이 동작합니다.
 콘솔 → 데이터베이스 및 스토리지 → Firestore → 데이터베이스 만들기 → 위치 `asia-northeast3(서울)` → 테스트 모드로 시작.
+
+> ⚠️ **보안 규칙(중요)**: 저장소의 `firestore.rules` 는 항상 최신이지만, 이 파일이 자동으로 Firestore에 적용되지는 않는다.
+> 테스트 모드가 만료되기 전에 Firebase 콘솔 → Firestore Database → **규칙** 에 `firestore.rules` 내용을 붙여넣고 **[게시]** 해야 한다.
+> 현재 파일(v2)은 `works/{id}/comments`(칭찬 댓글)와 `galleryPeers`(3D 아바타)까지 포함한다.
+
+## 검증 스크린샷
+
+`screenshots/` 폴더에 기능 확인용 화면을 남겨 둔다.
+
+| 파일 | 내용 |
+|---|---|
+| `onna-live-13-tab3-view-toggle-2026-11-15.png` | 3교시 상단 `목록 / 3D 전시관` 전환 버튼 |
+| `onna-live-14-hall-entrance-works-2026-11-15.png` | 3D 전시실 입장, 가벽 액자에 학생 작품이 걸린 모습 |
+| `onna-live-15-hall-work-detail-comment-2026-11-15.png` | 액자 클릭 → 작품 상세·하트·칭찬 댓글 |
+| `onna-live-16-hall-firstperson-2026-11-15.png` | 1인칭 시점 |
+| `onna-live-17-hall-photozone-2026-11-15.png` | 포토존(모자이크 벽 + 러그) |
+| `onna-live-18-hall-photo-capture-2026-11-15.png` | 기념사진 캡처 결과 |
+| `onna-live-19-hall-emoji-reaction-2026-11-15.png` | 👋👏❤️ 리액션 |
+| `onna-live-20-hall-peer-avatar-2026-11-15.png` | 같은 방 친구 아바타 동기화 |
+| `onna-live-21-hall-teacher-title-2026-11-15.png` | 교사 모드에서 바꾼 전시관 제목 반영 |
+| `onna-live-22-hall-empty-classroom-2026-11-15.png` | 수업 전 빈 전시관(기본 제목) |

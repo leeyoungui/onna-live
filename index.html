@@ -1512,6 +1512,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       }
       return text;
     }
+    function clipText(c, text, maxW) {
+      var t = String(text || '');
+      if (c.measureText(t).width <= maxW) return t;
+      while (t.length > 1 && c.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+      return t + '…';
+    }
     function roundRect(c, x, y, w, h, r) {
       c.beginPath();
       c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.quadraticCurveTo(x + w, y, x + w, y + r);
@@ -2283,24 +2289,29 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       out.width = w; out.height = h;
       var c = out.getContext('2d');
       c.drawImage(cv, 0, 0, w, h);
-      var band = Math.round(h * 0.2);
+      var band = Math.round(h * 0.22);
       var g = c.createLinearGradient(0, h - band, 0, h);
       g.addColorStop(0, 'rgba(14,18,32,0)');
       g.addColorStop(0.4, 'rgba(14,18,32,.85)');
       g.addColorStop(1, 'rgba(14,18,32,.96)');
       c.fillStyle = g;
       c.fillRect(0, h - band, w, band);
-      var pad = Math.round(w * 0.045);
+      var pad = Math.round(w * 0.04);
       c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+      var fs1 = Math.round(band * 0.3);
+      var fs2 = Math.round(band * 0.16);
+      var ff = function (px, wt) { c.font = wt + ' ' + px + 'px ' + FONT; };
+      ff(fs1, '800');
       c.fillStyle = '#fff7e8';
-      c.font = '800 ' + Math.round(w * 0.042) + 'px ' + FONT;
-      c.fillText(hallTitleText(), pad, h - band * 0.42);
+      c.fillText(clipText(c, hallTitleText(), w - pad * 2), pad, h - band * 0.47);
+      var right = ((profile ? profile.num + '번 ' + profile.name + ' · ' : '') + new Date().toLocaleDateString('ko-KR'));
+      ff(fs2, '600');
+      var rw = c.measureText(right).width;
       c.fillStyle = 'rgba(255,247,232,.85)';
-      c.font = '600 ' + Math.round(w * 0.027) + 'px ' + FONT;
-      c.fillText(hallSubText() + (profile ? ' · ' + profile.num + '번 ' + profile.name : ''), pad, h - band * 0.17);
+      c.fillText(clipText(c, hallSubText(), w - pad * 2 - rw - 24), pad, h - band * 0.18);
       c.textAlign = 'right';
-      c.fillStyle = 'rgba(255,255,255,.7)';
-      c.fillText('ONNA LIVE · ' + new Date().toLocaleDateString('ko-KR'), w - pad, h - band * 0.17);
+      c.fillStyle = 'rgba(255,255,255,.72)';
+      c.fillText(clipText(c, right, w * 0.6), w - pad, h - band * 0.18);
       photoUrl = out.toDataURL('image/png');
       el('photoImg').src = photoUrl;
       el('photoModal').classList.remove('hidden');

@@ -12,6 +12,13 @@ rules_version = '2';
 // v2 (2026-11-15): 3D 전시관 추가
 //   - rooms/{room}/galleryPeers/{peerId} : 같은 방 아바타 위치·이모지 동기화 (퇴장 시 삭제 허용)
 //   - rooms/{room}/works/{id}/comments/{cid} : 작품 칭찬 댓글
+//
+// v3 (2026-11-21): 0교시 손그림 3D 아바타
+//   - rooms/{room}/sketches/{uid} : 학생 손그림 아바타 (문서 id = 학생 uid, 1인 1작품 덮어쓰기)
+//     · image  : 400px JPEG base64 (앱에서 48,000자 이하로 압축 → 약 36KB)
+//     · speech : 말풍선 한 마디 (최대 30자)
+//     · likedBy: 하트(좋아요) — arrayUnion / arrayRemove
+//     · delete 허용: 교사 모드 '손그림 전체 지우기'로 수업 후·테스트 정리
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -59,6 +66,16 @@ service cloud.firestore {
         allow create, update: if request.resource.data.name is string
                               && request.resource.data.name.size() <= 12;
         allow delete: if true;          // 퇴장/탭 닫기 정리
+      }
+
+      // 0교시 · 손그림 3D 아바타 (문서 id = 학생 uid, 1인 1작품 덮어쓰기)
+      match /sketches/{doc} {
+        allow read: if true;
+        allow create, update: if request.resource.data.image is string
+                              && request.resource.data.image.size() <= 60000
+                              && request.resource.data.speech is string
+                              && request.resource.data.speech.size() <= 60;
+        allow delete: if true;          // 교사 모드 '손그림 전체 지우기' (수업 후 정리)
       }
     }
   }

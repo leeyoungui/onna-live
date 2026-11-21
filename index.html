@@ -3118,7 +3118,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       on($('skClearAll'), 'click', clearAll);
       on($('skDClose'), 'click', function () { Stage.closeDetail(); });
       on($('skDLike'), 'click', function () { if (Stage.current()) toggleSkLike(Stage.current()); });
-      on($('skTopBtn'), 'click', function () { Stage.openTop(); });
+      on($('stageTopBtn'), 'click', function () { Stage.openTop(); });
       on($('skTopClose'), 'click', function () { Stage.closeTop(); });
       on($('stageClose'), 'click', function () { Stage.close(); });
       on($('skDetail'), 'click', function (e) { if (e.target === $('skDetail')) Stage.closeDetail(); });

@@ -822,7 +822,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   </div>
 
   <div class="stage-bot">
-    <div class="stage-tip" id="stageTip">드래그로 돌려 보고, 휠·두 손가락으로 확대해요 · 아바타를 누르면 크게 보기 + ❤️</div>
+    <div class="stage-tip" id="stageTip">드래그·방향키로 돌려 보고, 휠·두 손가락·+/-로 확대해요 · 아바타를 누르면 크게 보기 + ❤️</div>
   </div>
 
   <!-- 아바타 크게 보기 -->
@@ -3565,7 +3565,15 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       }, { passive: false });
       window.addEventListener('keydown', function (e) {
         if (!isOpen) return;
-        if (e.key !== 'Escape' && e.code !== 'Escape') return;
+        var k = e.key;
+        // 노트북·전자칠판에서는 방향키·+/-로도 무대를 돌려 볼 수 있게
+        if (k === 'ArrowLeft') { orbit.tYaw += 0.12; e.preventDefault(); return; }
+        if (k === 'ArrowRight') { orbit.tYaw -= 0.12; e.preventDefault(); return; }
+        if (k === 'ArrowUp') { orbit.tPitch = clamp(orbit.tPitch - 0.06, -0.28, 0.9); e.preventDefault(); return; }
+        if (k === 'ArrowDown') { orbit.tPitch = clamp(orbit.tPitch + 0.06, -0.28, 0.9); e.preventDefault(); return; }
+        if (k === '+' || k === '=') { orbit.tDist = clamp(orbit.tDist * 0.9, 4.5, 42); e.preventDefault(); return; }
+        if (k === '-' || k === '_') { orbit.tDist = clamp(orbit.tDist * 1.1, 4.5, 42); e.preventDefault(); return; }
+        if (k !== 'Escape' && e.code !== 'Escape') return;
         if (!el('skDetail').classList.contains('hidden')) { closeDetail(); return; }
         if (!el('skTop').classList.contains('hidden')) { closeTop(); return; }
         close();

@@ -3380,19 +3380,31 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
     function layout(resetDist) {
       var n = dolls.length;
-      if (!n) { TARGET.set(0, 1.7, 0); if (resetDist) { orbit.tDist = 12; } return; }
-      var cols = n <= 2 ? n : n <= 6 ? Math.ceil(n / 2) : n <= 12 ? 4 : 5;
+      if (!n) { TARGET.set(0, 1.7, 0); if (resetDist) orbit.tDist = 12; return; }
+      var aspect = (window.innerWidth || 1) / (window.innerHeight || 1);
+      var wide = aspect > 1.15;
+      var cols;
+      if (n <= 4) cols = n;
+      else if (wide) cols = n <= 16 ? 4 : 5;
+      else cols = n <= 6 ? 2 : 3;
       var rows = Math.ceil(n / cols);
+      var RISE = 1.05, DEPTH = 2.55;
       dolls.forEach(function (d, i) {
         var r = Math.floor(i / cols), c = i % cols;
         var inRow = Math.min(cols, n - r * cols);
-        d.base.x = (c - (inRow - 1) / 2) * SX;
-        d.base.z = (r - (rows - 1) / 2) * SZ;
-        d.base.y = BY;
+        // 뒷줄은 더 높게, 살짝 엇갈리게 → 서로 가리지 않고 합창단처럼 보인다
+        d.base.x = (c - (inRow - 1) / 2) * SX + (r % 2 ? SX * 0.34 : 0);
+        d.base.z = -(r * DEPTH);
+        d.base.y = BY + r * RISE;
         d.group.position.set(d.base.x, d.base.y, d.base.z);
       });
-      TARGET.set(0, BY + 0.35, 0);
-      if (resetDist) orbit.tDist = Math.max(9.5, cols * 3.05, rows * 2.5 + 5.2);
+      var topY = BY + (rows - 1) * RISE;
+      TARGET.set(0, (2.4 + topY) / 2, -((rows - 1) * DEPTH) / 2);
+      if (resetDist) {
+        var wNeed = (cols * SX + 2.4) / (0.975 * Math.max(0.45, aspect));
+        var hNeed = ((rows - 1) * RISE + 4.4) / 0.975;
+        orbit.tDist = clamp(Math.max(9.5, wNeed, hNeed) * 1.04, 9.5, 36);
+      }
     }
 
     function updateMedals() {

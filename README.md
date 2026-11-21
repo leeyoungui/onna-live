@@ -5,12 +5,14 @@
 
 - **앱 주소**: https://leeyoungui.github.io/onna-live/
 - **기본 수업 방**: `bongmyeong-1119` (봉명중 3학년 AI 캐릭터 수업, 2026-11-19)
+- **손그림 3D 아이스브레이킹 방**: https://leeyoungui.github.io/onna-live/?room=ai-character (QR: `qr_ai-character.png`)
 - 다른 수업은 주소 뒤에 `?room=방이름`만 붙이면 됩니다. 예) `?room=gwandong-microbit`
 
-## 3교시 구성
+## 교시 구성
 
 | 탭 | 내용 |
 |---|---|
+| 🎨 0교시 · 손그림 3D 아바타 | 손그림 얼굴 + 말풍선 한 마디 → 3D 무대에 둥둥 떠다니는 인형으로 등장, 하트·TOP 3 (아이스브레이킹) |
 | 1교시 · 퀴즈 & 톡 | 실시간 채팅, 선생님이 띄운 퀴즈/질문 배너 |
 | 2교시 · 프롬프트 교실 | ONNA AI 캐릭터 교실 / ONNA 프롬프트 메이커 / Google Gemini / 캔바(Canva Edu) 학급 초대 링크 + 5대 비주얼 속성 요약 |
 | 3교시 · 굿즈 자랑 & 투표 | 작품 사진 업로드(자동 압축) + 한 줄 설명, 실시간 갤러리(최신순/인기순), ❤️ 좋아요 투표, 한 줄 소감 |
@@ -25,6 +27,7 @@
 - 학생 접속 QR 띄우기 (칠판용)
 - 결과 내려받기: 채팅 CSV · 작품·투표 CSV · 소감 CSV · 수업 요약 TXT (결과보고서 증빙용)
 - 🏛️ **3D 전시관 제목·안내 설정**: 입력란에 전시회 제목/부제를 넣고 `저장` → `rooms/{방}` 의 `galleryTitle`·`gallerySub` 에 저장되어 전시실 입구 배너와 포토존 모자이크 벽면에 바로 반영 / `기본값`으로 비우면 방에 맞는 기본 제목 사용
+- 🎨 **손그림 3D 무대 · 손그림 전체 지우기**: 이 방에 올라온 손그림 아바타를 한 번에 삭제(수업 후·테스트 정리용). 삭제 전 확인창이 뜨고, 옆에 현재 개수가 표시됩니다
 - 🎨 **캔바 초대 링크 설정**: 입력란에 링크를 넣고 `저장` → `rooms/{방}` 의 `canvaUrl` 에 저장되어 2·3교시 학생 화면에 바로 반영 / `비우기`(빈 값)로 저장하면 숨김
 
 ### 캔바 링크 동작 규칙
@@ -32,6 +35,19 @@
 - `rooms/{방}.canvaUrl` 이 있으면 그 값 사용 (빈 문자열이면 숨김)
 - 필드가 없을 때 `bongmyeong-1119`(기본 방)은 기본 초대 링크를 사용, 다른 방은 숨김
 - 기본값은 `index.src.html` 의 `DEFAULT_CANVA_URL` 한 곳에서만 관리
+
+## 🎨 손그림 3D 아바타 (0교시 · 아이스브레이킹)
+
+수업 시작 전 5~10분, 학생 얼굴을 손그림으로 그려 3D 무대에 띄우는 아이스브레이킹. **가입·로그인·앱 설치 없이** 번호+이름만으로 참여합니다.
+
+- **입장 직후 바로**: 교시 탭에 `🎨 손그림 3D 아바타`(0교시)가 추가되었고, 1교시 맨 위에도 바로가기 카드가 있습니다. `?room=ai-character` 방은 입장하면 이 탭이 처음 열립니다.
+- **그리기**: 정사각 캔버스(터치·마우스 모두), 연한 **얼굴 가이드**(끄기/켜기, 저장 안 됨), 펜 색 7종(검정·갈색·빨강·주황·파랑·초록·분홍), 굵기 3단계, 지우개, 전체 지우기. 말풍선 한 마디 최대 30자 → `🚀 3D 무대에 띄우기`.
+- **저장 용량**: 400px 흰 배경 JPEG로 자동 압축(최대 48,000자 ≈ 36KB)해 `rooms/{방}/sketches/{학생uid}` 에 저장. **1인 1작품**(같은 사람이 다시 올리면 덮어씀, 하트는 유지).
+- **3D 무대**: 손그림이 둥근 3D 인형(머리 전면에 손그림 텍스처 + 몸통 + 앞면 이름표 `번호·이름` + 머리 위 말풍선)으로 떠서 살랑살랑 움직입니다.
+  - 시점: 드래그 / 방향키 회전, 휠·두 손가락·`+` `-` 확대, `Esc` 닫기
+  - 아바타를 누르면 **크게 보기 + ❤️ 하트 토글**(3교시 작품 투표와 같은 방식)
+  - `🏆 TOP 3` : 하트 순위 1·2·3위를 그림·이름·말풍선·하트 수로 한눈에. 1~3위 아바타 머리 위에는 🥇🥈🥉 메달이 뜹니다.
+  - 인원이 늘면 뒷줄이 높게·엇갈리게 서는 합창단 배치로 자동 정렬되고, 말풍선 크기와 카메라 거리도 인원에 맞춰 조정됩니다.
 
 ## 🏛️ 3D 전시관 (3교시)
 
@@ -66,7 +82,8 @@
 - 빌드: `python3 build.py` → `vendor/*.js` 를 `index.src.html` 의 `<!--__THREE__-->` 등 자리표시자에 인라인해 `index.html` 생성
 - **Firestore Database만 사용** (Storage 미사용 → 무료 Spark 요금제로 동작)
 - 작품 이미지는 브라우저 `<canvas>`에서 가로 최대 720px, JPEG 품질 0.72부터 자동 조정하여 약 100KB 이하 base64로 문서에 직접 저장
-- 방 분리: `rooms/{room}` 문서(채팅 잠금·퀴즈·캔바 링크·전시관 제목) + 하위 컬렉션 `messages`, `works`(+`comments` 하위), `reflections`, `galleryPeers`
+- 방 분리: `rooms/{room}` 문서(채팅 잠금·퀴즈·캔바 링크·전시관 제목) + 하위 컬렉션 `messages`, `works`(+`comments` 하위), `reflections`, `galleryPeers`, `sketches`
+- 0교시 손그림은 `index.src.html` 안의 `Sketch`(그림판) · `Stage`(Three.js 무대) 모듈. 손그림은 문서 1건에 `image`(JPEG base64)·`speech`·`num`·`name`·`likedBy` 만 두고, 3D 얼굴은 그 이미지를 구체 앞면 캡에 매핑해 그립니다(외부 3D 모델·Storage 미사용).
 - **입력창 키 가드**: 3D 전시관의 이동 단축키(`W A S D`·방향키·`V`·`Esc`)는 `input`/`textarea`/`select`/`contenteditable`에 커서가 있을 때 동작하지 않는다(`isTypingTarget()`). 그래서 칭찬 댓글 입력창에서는 띄어쓰기·한글 조합이 그대로 들어가고, `Esc`는 입력칸 포커스만 풀며 모달은 닫지 않는다(모달·전시관을 닫으려면 `Esc`를 한 번 더)
 - **모바일 키보드**: `visualViewport`로 키보드 높이를 재 `--kb` 변수에 넣어 작품 상세 시트를 키보드 위로 올린다. 전시관 컨테이너는 `touch-action:manipulation`(캔버스·조이스틱만 `none`)이라 모달 안을 손가락으로 스크롤할 수 있다
 - GitHub Pages(`main` 브랜치 루트)로 배포
@@ -78,7 +95,7 @@
 
 > ⚠️ **보안 규칙(중요)**: 저장소의 `firestore.rules` 는 항상 최신이지만, 이 파일이 자동으로 Firestore에 적용되지는 않는다.
 > 테스트 모드가 만료되기 전에 Firebase 콘솔 → Firestore Database → **규칙** 에 `firestore.rules` 내용을 붙여넣고 **[게시]** 해야 한다.
-> 현재 파일(v2)은 `works/{id}/comments`(칭찬 댓글)와 `galleryPeers`(3D 아바타)까지 포함한다.
+> 현재 파일(v3)은 `works/{id}/comments`(칭찬 댓글), `galleryPeers`(3D 아바타), `sketches`(0교시 손그림 3D 아바타)까지 포함한다.
 
 ## 검증 스크린샷
 
@@ -99,3 +116,15 @@
 | `onna-live-23-hall-entered-2026-11-15.png` | 라이브 배포본에서 전시관 입장(수정 배포 후 재검증) |
 | `onna-live-24-comment-space-typed-2026-11-15.png` | 칭찬 댓글 입력창에 띄어쓰기 포함 문장이 그대로 입력된 모습 |
 | `onna-live-25-comment-registered-2026-11-15.png` | 등록 후 띄어쓰기가 살아 있는 댓글이 목록에 표시 |
+| `onna-live-26-sketch-tab-2026-11-21.png` | 0교시 손그림 3D 아바타 탭(그림판·팔레트·말풍선 입력) |
+| `onna-live-27-sketch-drawn-face-2026-11-21.png` | 캔버스에 실제로 그린 얼굴(가이드선 위) |
+| `onna-live-28-sketch-restored-2026-11-21.png` | 다시 접속했을 때 내 손그림이 캔버스에 복원됨 |
+| `onna-live-29-stage-first-avatar-2026-11-21.png` | 3D 무대 첫 아바타(손그림 얼굴·이름표·말풍선) |
+| `onna-live-30-stage-class-16-2026-11-21.png` | 16명 아바타 합창단 배치 |
+| `onna-live-31-stage-detail-heart-2026-11-21.png` | 아바타 크게 보기 + ❤️ 하트 |
+| `onna-live-32-stage-top3-medals-2026-11-21.png` | 1~3위 머리 위 🥇🥈🥉 메달 |
+| `onna-live-33-stage-top3-ranking-2026-11-21.png` | `🏆 TOP 3` 순위 뷰 |
+| `onna-live-34-stage-rotate-2026-11-21.png` | 방향키로 무대 회전 |
+| `onna-live-35-stage-zoom-2026-11-21.png` | `+` 키로 확대 |
+| `onna-live-36-teacher-sketch-clear-2026-11-21.png` | 교사 패널의 손그림 전체 지우기 |
+| `onna-live-37-bongmyeong-hall-2026-11-21.png` | 기존 방(13점) 3D 전시관 정상 동작(회귀 확인) |
